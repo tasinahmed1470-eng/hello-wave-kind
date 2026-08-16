@@ -1,0 +1,33 @@
+name: Deploy to Namecheap cPanel
+
+on:
+  push:
+    branches:
+      - main  # আপনার প্রধান ব্র্যাঞ্চের নাম (main নাকি master দেখে নিন)
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploying project
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies & Build
+        run: |
+          npm install
+          npm run build
+
+      - name: 📂 Sync files to cPanel FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./
