@@ -3,7 +3,7 @@ name: Deploy to Namecheap cPanel
 on:
   push:
     branches:
-      - main  # আপনার প্রধান ব্র্যাঞ্চের নাম (main নাকি master দেখে নিন)
+      - main
 
 jobs:
   web-deploy:
@@ -22,6 +22,8 @@ jobs:
         run: |
           npm install
           npm run build
+          # Check output folder
+          if [ -d "build" ] && [ ! -d "dist" ]; then cp -r build dist; fi
 
       - name: 📂 Sync files to cPanel FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
