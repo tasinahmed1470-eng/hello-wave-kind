@@ -22,8 +22,15 @@ jobs:
         run: |
           npm install
           npm run build
-          # Check output folder
-          if [ -d "build" ] && [ ! -d "dist" ]; then cp -r build dist; fi
+          # Create dist folder if it doesn't exist and copy build outputs
+          if [ ! -d "dist" ]; then
+            if [ -d "build" ]; then
+              cp -r build dist
+            else
+              mkdir -p dist
+              rsync -av --exclude='node_modules' --exclude='.git' --exclude='.github' --exclude='dist' ./ dist/
+            fi
+          fi
 
       - name: 📂 Sync files to cPanel FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
