@@ -22,7 +22,6 @@ jobs:
         run: |
           npm install
           npm run build
-          # Create dist folder if it doesn't exist and copy build outputs
           if [ ! -d "dist" ]; then
             if [ -d "build" ]; then
               cp -r build dist
@@ -38,5 +37,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
           local-dir: ./dist/
           server-dir: ./
