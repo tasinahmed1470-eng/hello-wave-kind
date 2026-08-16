@@ -1,4 +1,4 @@
-name: Deploy to Namecheap cPanel
+name: Generate Build Files
 
 on:
   push:
@@ -6,39 +6,30 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: 🎉 Deploying project
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: Get code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: 📦 Install dependencies & Build
+      - name: Install & Build
         run: |
           npm install
           npm run build
-          if [ ! -d "dist" ]; then
-            if [ -d "build" ]; then
-              cp -r build dist
-            else
-              mkdir -p dist
-              rsync -av --exclude='node_modules' --exclude='.git' --exclude='.github' --exclude='dist' ./ dist/
-            fi
-          fi
 
-      - name: 📂 Sync files to cPanel FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Save Artifact for Download
+        uses: actions/upload-artifact@v4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          security: loose
-          local-dir: ./dist/
-          server-dir: ./
+          name: website-build
+          path: |
+            dist
+            build
+            out
+            .output
+            public
+          include-hidden-files: true
